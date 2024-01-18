@@ -1,20 +1,19 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
+# VPC Configuration
+resource "aws_vpc" "gromacs_vpc" {
+  cidr_block = "10.0.0.0/16"
+
+  tags = {
+    Name = "gromacs"
   }
 }
 
-# Configure the AWS Provider
-provider "aws" {
-  region = "us-east-2"
-}
-
-# Create a VPC
-resource "aws_vpc" "gromacs-public" {
-  cidr_block = "10.0.0.0/16"
-}
+# Public Subnet Configuration
 
 
+# Private Subnet Configuration
+
+# Head Node Configuration
+
+# Compute Node(s) Configuration
+
+# File System Configuration
