@@ -88,17 +88,21 @@ resource "aws_placement_group" "gromacs_placement_group" {
   strategy = "cluster"
 }
 
-resource "" "name" {
-  
+resource "aws_autoscaling_attachment" "gromacs_autoscaling_attachment" {
+  autoscaling_group_name = aws_autoscaling_group.gromacs_compute_nodes.name
+  lb_target_group_arn = aws_lb_target_group.gromacs_target_group.arn 
 }
 resource "aws_autoscaling_group" "gromacs_compute_nodes" {
   name = "gromacs"
-  max_size = 3
+  max_size = 20
   min_size = 1
-  desired_capacity = 1
   launch_configuration = aws_launch_configuration.gromacs_launch_configuration.name
   vpc_zone_identifier = [ aws_subnet.gromacs_private_subnet.id ]
   depends_on = [ aws_instance.gromacs_head_node ]
+  availability_zones = [us-east-2a]
+  placement_group = aws_placement_group.gromacs_placement_group.name
+  health_check_grace_period = 300
+  health_check_type = "EC2"
 }
 
 resource "aws_launch_configuration" "gromacs_launch_configuration" {
