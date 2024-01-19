@@ -135,22 +135,6 @@ resource "aws_autoscaling_policy" "gromacs_autoscaling_policy" {
   }
 }
 
-resource "aws_cloudwatch_metric_alarm" "gromacs_cloudwatch_metric_alarm" {
-  alarm_name = "gromacs"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods = 2
-  metric_name = "CPUUtilization"
-  namespace = "AWS/EC2"
-  period = 120
-  statistic = "Average"
-  threshold = 50.0
-  alarm_description = "Scale compute nodes up and down based on CPU utilization"
-  alarm_actions = [ aws_autoscaling_policy.gromacs_autoscaling_policy.arn ]
-  dimensions = {
-    AutoScalingGroupName = aws_autoscaling_group.gromacs_compute_nodes.name
-  }
-}
-
 //////////////////////////////
 
 
