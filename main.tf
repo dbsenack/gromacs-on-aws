@@ -83,6 +83,14 @@ resource "aws_instance" "gromacs_head_node" {
 }
 
 # Compute Node(s) Configuration
+resource "aws_placement_group" "gromacs_placement_group" {
+  name = "gromacs"
+  strategy = "cluster"
+}
+
+resource "" "name" {
+  
+}
 resource "aws_autoscaling_group" "gromacs_compute_nodes" {
   name = "gromacs"
   max_size = 3
@@ -145,7 +153,17 @@ resource "aws_cloudwatch_metric_alarm" "gromacs_cloudwatch_metric_alarm" {
 
 # File System Configuration
 resource "aws_efs_file_system" "gromacs_file_system" {
-  
+  creation_token = "gromacs"
+  encrypted = true
+  lifecycle_policy {
+    transition_to_ia = "AFTER_30_DAYS"
+
+}
+
+resource "aws_efs_mount_target" "gromacs_mount_target" {
+  file_system_id = aws_efs_file_system.gromacs_file_system.id
+  subnet_id = aws_subnet.gromacs_private_subnet.id
+  security_groups = [ aws_security_group.gromacs_security_group.id ]
 }
 
 //////////////////////////////
@@ -162,7 +180,7 @@ resource "aws_security_group" "gromacs_security_group" {
     from_port = 22
     to_port = 22
     protocol = "tcp"
-    cidr_blocks = []
+    cidr_blocks = [var.my_ip]
   }
 
   ingress {
@@ -170,7 +188,7 @@ resource "aws_security_group" "gromacs_security_group" {
     from_port = 80
     to_port = 80
     protocol = "tcp"
-    cidr_blocks = []
+    cidr_blocks = [var.my_ip]
   }
 
   ingress {
@@ -178,5 +196,5 @@ resource "aws_security_group" "gromacs_security_group" {
     from_port = 443
     to_port = 443
     protocol = "tcp"
-    cidr_blocks = []
+    cidr_blocks = [var.my_ip]
   }
